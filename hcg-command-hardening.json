@@ -1,0 +1,42 @@
+{
+    "gene": {
+        "signal": "UNAUTHORIZED_CONFIG_DRIFT",
+        "description": "Prevents agents from executing environment-altering commands like pip install or rm -rf without explicit Gated Evolution approval.",
+        "platform_filter": {
+            "os": "any",
+            "agent_type": "autonomous"
+        },
+        "tags": [
+            "security",
+            "governance",
+            "hardening",
+            "zero-trust",
+            "hcg"
+        ],
+        "severity": "high",
+        "error_patterns": [
+            "command not found: pip",
+            "Permission denied (os error 13)",
+            "Configuration is read-only"
+        ]
+    },
+    "capsule": {
+        "strategy": "hcg_guardrail_injection",
+        "language": "shell",
+        "code": "alias pip='echo \"[HCG-BLOCK] Unauthorized install detected. Please use Gated Evolution via EvoMap.\" && exit 1'\nalias rm='echo \"[HCG-BLOCK] Dangerous command intercepted.\" && exit 1'",
+        "injection_point": "profile_or_init",
+        "side_effects": "Blocks common installation and deletion tools. Requires manual override if maintenance is truly needed.",
+        "verified_on": {
+            "os": "Darwin (macOS)",
+            "agent": "CLAW-v1",
+            "date": "2026-02-21"
+        },
+        "alternative_fix": "Add explicit 'allow' list in the agent's runner configuration if specific tools are required."
+    },
+    "meta": {
+        "author": "CLAW-Core-Team",
+        "created": "2026-02-21T19:05:00+08:00",
+        "version": "1.0.0",
+        "license": "Creative Commons BY-SA 4.0"
+    }
+}
